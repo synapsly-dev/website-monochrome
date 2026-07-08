@@ -1,0 +1,91 @@
+.hero-glyph-wrap {
+  position: relative;
+  display: grid;
+  width: min(44vw, 40rem);
+  min-width: 19rem;
+  aspect-ratio: 1;
+  place-items: center;
+  justify-self: center;
+}
+
+.hero-glyph {
+  position: relative;
+  width: 94%;
+  height: 94%;
+  color: var(--ink);
+  overflow: visible;
+}
+
+.glyph-line {
+  stroke: #2b2b2b;
+  stroke-width: var(--glyph-line-width);
+}
+
+.glyph-node-fill-top {
+  fill: #000000;
+}
+
+.glyph-node-fill-base {
+  fill: #2b2b2b;
+}
+
+.glyph-node-fill-middle {
+  fill: #171717;
+}
+
+.glyph-node-expansion-middle {
+  fill: #171717;
+}
+
+.glyph-node-expansion {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.glyph-node-outline-top {
+  stroke: #000000;
+  stroke-width: var(--glyph-top-outline-width);
+}
+
+.glyph-node-outline-base {
+  stroke: #2b2b2b;
+  stroke-width: var(--glyph-small-outline-width);
+}
+
+.glyph-node-outline-middle {
+  stroke: #171717;
+  stroke-width: var(--glyph-small-outline-width);
+}
+
+
+.scroll-glyph .glyph-line {
+  stroke: #e5e5e5;
+}
+
+.scroll-glyph .glyph-node-fill-top {
+  fill: #ffffff;
+}
+
+.scroll-glyph .glyph-node-fill-base {
+  fill: #e5e5e5;
+}
+
+.scroll-glyph .glyph-node-fill-middle {
+  fill: #ededed;
+}
+
+.scroll-glyph .glyph-node-expansion-middle {
+  fill: #ededed;
+}
+
+.scroll-glyph .glyph-node-outline-top {
+  stroke: #ffffff;
+}
+
+.scroll-glyph .glyph-node-outline-base {
+  stroke: #e5e5e5;
+}
+
+.scroll-glyph .glyph-node-outline-middle {
+  stroke: #ededed;
+}

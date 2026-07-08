@@ -1,0 +1,101 @@
+:root {
+  --paper: #ffffff;
+  --ink: #262626;
+  --ink-soft: #6f6f6f;
+  --ink-line: #5a5a5a;
+  --font-sans:
+    'Mona Sans Variable', 'Mona Sans', ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-cjk:
+    'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', serif;
+
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--paper);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100svh;
+  margin: 0;
+  background: var(--paper);
+}
+
+button,
+a {
+  font: inherit;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+.site-shell {
+  min-height: 100svh;
+}
+
+.hero-scroll {
+  min-height: 3400svh;
+}
+
+.hero-screen {
+  position: sticky;
+  top: 0;
+  --mx: 50%;
+  --my: 50%;
+  --noise-dot: #000000;
+  --noise-opacity: 0.035;
+  --noise-blend: multiply;
+  --glow-rgb: 0 0 0;
+  --glow-alpha: 5%;
+  --glow-size: 22rem;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.hero-screen::before,
+.hero-screen::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+}
+
+.hero-screen::before {
+  z-index: 0;
+  opacity: var(--noise-opacity);
+  background-image:
+    radial-gradient(circle at 20% 30%, var(--noise-dot) 0 0.65px, transparent 0.75px),
+    radial-gradient(circle at 70% 60%, var(--noise-dot) 0 0.55px, transparent 0.7px);
+  background-position:
+    0 0,
+    8px 10px;
+  background-size:
+    18px 18px,
+    22px 22px;
+  mix-blend-mode: var(--noise-blend);
+}
+
+.hero-screen::after {
+  z-index: 0;
+  opacity: 0.42;
+  background: radial-gradient(
+    circle at var(--mx) var(--my),
+    rgb(var(--glow-rgb) / var(--glow-alpha)),
+    transparent var(--glow-size)
+  );
+  transition: opacity 260ms ease;
+}

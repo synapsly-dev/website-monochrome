@@ -1,0 +1,206 @@
+.black-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #171717;
+}
+
+.identity-stage {
+  position: absolute;
+  inset: 0;
+}
+
+.identity-lockup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 100vw;
+  height: 100svh;
+  transform: translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.scroll-glyph-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: min(44vw, 40rem);
+  min-width: 19rem;
+  aspect-ratio: 1;
+  place-items: center;
+  transform: translate(-50%, -50%);
+}
+
+.glyph-story {
+  position: absolute;
+  z-index: 1;
+  width: min(24vw, 25rem);
+  color: #f5f5f5;
+  pointer-events: none;
+}
+
+.glyph-story h3 {
+  margin: 0 0 0.34em;
+  color: #f5f5f5;
+  font-family: var(--font-cjk);
+  font-size: clamp(2.25rem, 4.1vw, 5.2rem);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 0.96;
+}
+
+.glyph-story p {
+  margin: 0;
+  color: #a3a3a3;
+  font-family: var(--font-cjk);
+  font-size: clamp(1rem, 1.35vw, 1.55rem);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+.story-projects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6em 1em;
+  margin-top: 1.25em;
+}
+
+.story-project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42em;
+  color: #a3a3a3;
+  font-family: var(--font-sans);
+  font-size: clamp(1.05rem, 1.35vw, 1.55rem);
+  font-weight: 520;
+  letter-spacing: 0;
+  line-height: 1.1;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: color 280ms ease;
+}
+
+.story-project-link:hover {
+  color: #f5f5f5;
+}
+
+.story-project-mark {
+  position: relative;
+  display: inline-block;
+  width: 0.24em;
+  height: 0.24em;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: currentColor;
+  transition:
+    width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 240ms ease;
+}
+
+.story-project-mark::before,
+.story-project-mark::after {
+  position: absolute;
+  content: "";
+  opacity: 0;
+  transition:
+    opacity 260ms ease,
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.story-project-mark::before {
+  top: 50%;
+  right: 0.04em;
+  width: 0.74em;
+  height: 0.08em;
+  border-radius: 999px;
+  background: currentColor;
+  transform: translateY(-50%) scaleX(0);
+  transform-origin: right center;
+}
+
+.story-project-mark::after {
+  top: 50%;
+  right: 0;
+  width: 0.34em;
+  height: 0.34em;
+  border-top: 0.08em solid currentColor;
+  border-right: 0.08em solid currentColor;
+  transform: translateY(-50%) rotate(45deg) scale(0.25);
+  transform-origin: center;
+}
+
+.story-project-link:hover .story-project-mark {
+  width: 0.84em;
+  height: 0.42em;
+  border-radius: 0;
+  background: transparent;
+}
+
+.story-project-link:hover .story-project-mark::before,
+.story-project-link:hover .story-project-mark::after {
+  opacity: 1;
+  transform: translateY(-50%) scaleX(1);
+}
+
+.story-project-link:hover .story-project-mark::after {
+  transform: translateY(-50%) rotate(45deg) scale(1);
+}
+
+.story-project-label {
+  position: relative;
+  display: inline-block;
+}
+
+.story-project-wave {
+  position: absolute;
+  right: -0.03em;
+  bottom: -0.36em;
+  left: -0.03em;
+  width: calc(100% + 0.06em);
+  height: 0.28em;
+  overflow: visible;
+  color: currentColor;
+  pointer-events: none;
+  transition:
+    bottom 280ms ease,
+    transform 280ms ease;
+}
+
+.story-project-wave path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.story-project-wave path + path {
+  opacity: 0.46;
+  stroke-width: 0.95;
+}
+
+.story-project-link:hover .story-project-wave {
+  bottom: -0.4em;
+  transform: translateX(0.02em);
+}
+
+.glyph-story-zhitu {
+  top: 22svh;
+  right: clamp(1.5rem, 8vw, 9rem);
+}
+
+.glyph-story-qiusuo {
+  top: 50svh;
+  left: clamp(1.5rem, 8vw, 9rem);
+}
+
+.glyph-story-growth {
+  right: clamp(1.5rem, 9vw, 10rem);
+  bottom: 20svh;
+}
+
