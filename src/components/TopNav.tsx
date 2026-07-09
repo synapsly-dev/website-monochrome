@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { siteLinks } from '../data/siteLinks'
 
 type NavItem = {
@@ -20,7 +20,7 @@ const pageAnchors: NavItem[] = [
   { label: '叙事', meta: 'Scroll narrative', note: '知图、求索与生长', pageTarget: 'stories' },
   { label: 'Syna ID', meta: 'Identity', note: '统一身份入口展示', pageTarget: 'synaId' },
   { label: 'Sponsors', meta: 'Network', note: '生态支持者动态场', pageTarget: 'sponsors' },
-  { label: '联系', meta: 'Footer', note: '邮箱、GitHub 与加入入口', pageTarget: 'contact' },
+  { label: '联系我们', meta: 'Footer', note: '邮箱、GitHub 与加入入口', pageTarget: 'contact' },
 ]
 
 const tabs: NavTab[] = [
@@ -88,14 +88,84 @@ const tabs: NavTab[] = [
 
 export function TopNav() {
   const [activeTabId, setActiveTabId] = useState<NavTab['id']>('sites')
+  const [activePageTarget, setActivePageTarget] = useState<NonNullable<NavItem['pageTarget']>>('stories')
   const [navOpen, setNavOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0]
+
+  useEffect(() => {
+    let frame = 0
+
+    const updateScrollState = () => {
+      frame = 0
+      const scrollY = window.scrollY
+      setScrolled(scrollY > 64)
+
+      if (scrollY > 64) {
+        setNavOpen(false)
+      }
+
+      const contactSection = document.querySelector<HTMLElement>('.contact-section')
+      const contactTop = contactSection?.offsetTop ?? Number.POSITIVE_INFINITY
+
+      if (scrollY + window.innerHeight * 0.42 >= contactTop) {
+        setActivePageTarget('contact')
+        return
+      }
+
+      const heroScroll = document.querySelector<HTMLElement>('.hero-scroll')
+      const heroTop = heroScroll?.offsetTop ?? 0
+      const maxHeroScroll = Math.max((heroScroll?.offsetHeight ?? 0) - window.innerHeight, 1)
+      const progress = Math.min(Math.max((scrollY - heroTop) / maxHeroScroll, 0), 1)
+
+      if (progress >= 0.82) {
+        setActivePageTarget('sponsors')
+        return
+      }
+
+      if (progress >= 0.58) {
+        setActivePageTarget('synaId')
+        return
+      }
+
+      setActivePageTarget('stories')
+    }
+
+    const onScroll = () => {
+      if (frame) {
+        return
+      }
+
+      frame = window.requestAnimationFrame(updateScrollState)
+    }
+
+    updateScrollState()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+
+    return () => {
+      if (frame) {
+        window.cancelAnimationFrame(frame)
+      }
+
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
 
   const closeMegaNav = () => {
     setNavOpen(false)
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
     }
+  }
+
+  const closeMegaNavAwayFromTabs = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!(event.target instanceof Element) || event.target.closest('.mega-nav-tab')) {
+      return
+    }
+
+    closeMegaNav()
   }
 
   const scrollToTop = () => {
@@ -105,6 +175,7 @@ export function TopNav() {
 
   const scrollToPageTarget = (target: NonNullable<NavItem['pageTarget']>) => {
     closeMegaNav()
+    setActivePageTarget(target)
 
     if (target === 'contact') {
       document
@@ -131,8 +202,8 @@ export function TopNav() {
 
   return (
     <div
-      className={`top-nav-shell${navOpen ? ' is-open' : ''}`}
-      onPointerEnter={() => setNavOpen(true)}
+      className={`top-nav-shell${navOpen ? ' is-open' : ''}${scrolled ? ' is-scrolled' : ''}`}
+      onPointerMove={closeMegaNavAwayFromTabs}
       onPointerLeave={() => setNavOpen(false)}
     >
       <div className="top-nav-trigger" aria-hidden="true" />
@@ -160,8 +231,21 @@ export function TopNav() {
                   setNavOpen(true)
                   setActiveTabId(tab.id)
                 }}
-                onMouseEnter={() => setActiveTabId(tab.id)}
-                onClick={() => setActiveTabId(tab.id)}
+                onMouseEnter={() => {
+                  setNavOpen(true)
+                  setActiveTabId(tab.id)
+                }}
+                onMouseLeave={(event) => {
+                  setNavOpen(false)
+
+                  if (document.activeElement === event.currentTarget) {
+                    event.currentTarget.blur()
+                  }
+                }}
+                onClick={() => {
+                  setNavOpen(true)
+                  setActiveTabId(tab.id)
+                }}
                 role="tab"
                 type="button"
               >
@@ -214,6 +298,24 @@ export function TopNav() {
             })}
           </div>
         </section>
+      </nav>
+      <nav className="scroll-section-nav" aria-label="本页导航">
+        <div className="scroll-section-tabs">
+          {pageAnchors.map((item) => (
+            <button
+              aria-current={activePageTarget === item.pageTarget ? 'page' : undefined}
+              className="scroll-section-tab"
+              key={`compact-${item.label}`}
+              onClick={() => scrollToPageTarget(item.pageTarget!)}
+              type="button"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+        <a className="scroll-section-cta" href="https://auth.synapsly.org/login">
+          立刻体验
+        </a>
       </nav>
     </div>
   )
