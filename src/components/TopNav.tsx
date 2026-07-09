@@ -161,7 +161,10 @@ export function TopNav() {
   }
 
   const closeMegaNavAwayFromTabs = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!(event.target instanceof Element) || event.target.closest('.mega-nav-tab')) {
+    if (
+      !(event.target instanceof Element) ||
+      event.target.closest('.mega-nav-tab, .mega-nav-panel, .mega-nav-page-anchors')
+    ) {
       return
     }
 
@@ -234,13 +237,6 @@ export function TopNav() {
                 onMouseEnter={() => {
                   setNavOpen(true)
                   setActiveTabId(tab.id)
-                }}
-                onMouseLeave={(event) => {
-                  setNavOpen(false)
-
-                  if (document.activeElement === event.currentTarget) {
-                    event.currentTarget.blur()
-                  }
                 }}
                 onClick={() => {
                   setNavOpen(true)
