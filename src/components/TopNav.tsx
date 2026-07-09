@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { siteLinks } from '../data/siteLinks'
 
 type NavItem = {
@@ -91,6 +91,7 @@ export function TopNav() {
   const [activePageTarget, setActivePageTarget] = useState<NonNullable<NavItem['pageTarget']>>('stories')
   const [navOpen, setNavOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const closeTimerRef = useRef<number | null>(null)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0]
 
   useEffect(() => {
@@ -153,11 +154,40 @@ export function TopNav() {
     }
   }, [])
 
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current)
+      }
+    }
+  }, [])
+
+  const cancelScheduledClose = () => {
+    if (closeTimerRef.current === null) {
+      return
+    }
+
+    window.clearTimeout(closeTimerRef.current)
+    closeTimerRef.current = null
+  }
+
   const closeMegaNav = () => {
+    cancelScheduledClose()
     setNavOpen(false)
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
     }
+  }
+
+  const scheduleMegaNavClose = () => {
+    if (closeTimerRef.current !== null) {
+      return
+    }
+
+    closeTimerRef.current = window.setTimeout(() => {
+      closeTimerRef.current = null
+      closeMegaNav()
+    }, 420)
   }
 
   const closeMegaNavAwayFromTabs = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -165,10 +195,11 @@ export function TopNav() {
       !(event.target instanceof Element) ||
       event.target.closest('.mega-nav-tab, .mega-nav-panel, .mega-nav-page-anchors')
     ) {
+      cancelScheduledClose()
       return
     }
 
-    closeMegaNav()
+    scheduleMegaNavClose()
   }
 
   const scrollToTop = () => {
@@ -235,10 +266,12 @@ export function TopNav() {
                   setActiveTabId(tab.id)
                 }}
                 onMouseEnter={() => {
+                  cancelScheduledClose()
                   setNavOpen(true)
                   setActiveTabId(tab.id)
                 }}
                 onClick={() => {
+                  cancelScheduledClose()
                   setNavOpen(true)
                   setActiveTabId(tab.id)
                 }}
