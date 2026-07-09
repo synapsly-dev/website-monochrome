@@ -93,44 +93,39 @@
     grid-template-columns: 1fr;
     grid-template-rows: auto;
     grid-template-areas:
-      "intro"
-      "links"
-      "newsletter"
+      "brand"
+      "products"
+      "company"
+      "address"
       "footer";
     min-height: auto;
-    gap: 2.2rem;
-    padding: 4.5rem 1.25rem 1.6rem;
+    gap: 2rem;
+    padding: 5.4rem 1.25rem 1.6rem;
   }
 
-  .contact-intro {
-    grid-template-columns: 1fr;
-    gap: 1.2rem;
+  .contact-brand p {
+    max-width: 18rem;
+    margin-top: 1rem;
   }
 
-  .contact-intro h2 {
-    max-width: 10ch;
-    font-size: clamp(3rem, 14vw, 5rem);
+  .contact-brand,
+  .contact-products,
+  .contact-company,
+  .contact-address {
+    margin-top: 0;
   }
 
-  .contact-link-row {
-    display: grid;
-    gap: 0.9rem;
+  .contact-column {
+    gap: 0.75rem;
   }
 
-  .newsletter-form {
-    grid-template-columns: 1fr;
-    width: 100%;
-    gap: 1.6rem;
-    justify-self: stretch;
+  .contact-column a,
+  .contact-column span {
+    font-size: 1rem;
   }
 
-  .newsletter-form label {
-    font-size: clamp(1.8rem, 8vw, 2.6rem);
-  }
-
-  .newsletter-control {
-    min-height: 4.2rem;
-    border-radius: 1.1rem;
+  .contact-column h2:not(:first-child) {
+    margin-top: 1rem;
   }
 
   .site-footer {
@@ -139,6 +134,11 @@
     justify-content: flex-start;
     gap: 0.55rem;
     margin-top: 2rem;
+  }
+
+  .site-footer nav {
+    justify-content: flex-start;
+    gap: 0.9rem 1.25rem;
   }
 
   .home-product-list-left,

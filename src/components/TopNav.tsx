@@ -11,16 +11,21 @@ type NavItem = {
 }
 
 type NavTab = {
-  id: 'sites' | 'products' | 'useCases' | 'about'
+  id: 'sites' | 'products' | 'useCases' | 'about' | 'contact'
   items: NavItem[]
   label: string
+  pageHref?: string
+}
+
+type TopNavProps = {
+  page?: 'home' | 'contact'
 }
 
 const pageAnchors: NavItem[] = [
   { label: '叙事', meta: 'Scroll narrative', note: '知图、求索与生长', pageTarget: 'stories' },
   { label: 'Syna ID', meta: 'Identity', note: '统一身份入口展示', pageTarget: 'synaId' },
   { label: 'Sponsors', meta: 'Network', note: '生态支持者动态场', pageTarget: 'sponsors' },
-  { label: '联系我们', meta: 'Footer', note: '邮箱、GitHub 与加入入口', pageTarget: 'contact' },
+  { label: '联系我们', meta: 'Footer', note: '邮箱、产品与公司入口', pageTarget: 'contact' },
 ]
 
 const tabs: NavTab[] = [
@@ -79,14 +84,36 @@ const tabs: NavTab[] = [
       },
       { href: 'https://shop.synapsly.org', featured: 'wide', label: '生态网络', meta: 'Network', note: '活跃服务与未来入口的集合点' },
       { href: 'https://github.com/synapsly-dev', label: 'GitHub', meta: 'Engineering', note: '工程组织与公开开发入口' },
-      { href: 'mailto:hello@synapsly.org', label: '联系我们', meta: 'hello@synapsly.org', note: '通用联系与产品问题' },
+      { label: '团队介绍', meta: 'Team', note: '团队介绍页面即将上线' },
       { href: 'mailto:business@synapsly.org', label: '商务合作', meta: 'business@synapsly.org', note: '合作、商业项目与机构咨询' },
+      { href: 'https://auth.synapsly.org', label: 'Syna ID', meta: 'Account', note: 'Synapsly 生态的统一身份入口' },
+    ],
+  },
+  {
+    id: 'contact',
+    label: '联系我们',
+    pageHref: '/contact',
+    items: [
+      { href: 'mailto:hello@synapsly.org', featured: 'large', label: '通用联系', meta: 'hello@synapsly.org', note: '产品问题、账号咨询与一般沟通' },
+      { href: 'mailto:business@synapsly.org', featured: 'wide', label: '商务合作', meta: 'business@synapsly.org', note: '合作、商业项目与机构咨询' },
+      { href: 'https://github.com/synapsly-dev', label: 'GitHub', meta: 'Engineering', note: '工程组织与公开开发入口' },
       { href: 'https://auth.synapsly.org', label: 'Syna ID', meta: 'Account', note: 'Synapsly 生态的统一身份入口' },
     ],
   },
 ]
 
-export function TopNav() {
+const navigateToPath = (path: string) => {
+  if (window.location.pathname === path) {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    return
+  }
+
+  window.history.pushState({}, '', path)
+  window.dispatchEvent(new Event('synapsly:navigation'))
+  window.scrollTo({ top: 0, behavior: 'auto' })
+}
+
+export function TopNav({ page = 'home' }: TopNavProps) {
   const [activeTabId, setActiveTabId] = useState<NavTab['id']>('sites')
   const [activePageTarget, setActivePageTarget] = useState<NonNullable<NavItem['pageTarget']>>('stories')
   const [navOpen, setNavOpen] = useState(false)
@@ -95,6 +122,12 @@ export function TopNav() {
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0]
 
   useEffect(() => {
+    if (page !== 'home') {
+      setScrolled(false)
+      setNavOpen(false)
+      return
+    }
+
     let frame = 0
 
     const updateScrollState = () => {
@@ -104,14 +137,6 @@ export function TopNav() {
 
       if (scrollY > 64) {
         setNavOpen(false)
-      }
-
-      const contactSection = document.querySelector<HTMLElement>('.contact-section')
-      const contactTop = contactSection?.offsetTop ?? Number.POSITIVE_INFINITY
-
-      if (scrollY + window.innerHeight * 0.42 >= contactTop) {
-        setActivePageTarget('contact')
-        return
       }
 
       const heroScroll = document.querySelector<HTMLElement>('.hero-scroll')
@@ -152,7 +177,7 @@ export function TopNav() {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }
-  }, [])
+  }, [page])
 
   useEffect(() => {
     return () => {
@@ -204,19 +229,29 @@ export function TopNav() {
 
   const scrollToTop = () => {
     closeMegaNav()
+    if (page !== 'home') {
+      navigateToPath('/')
+      return
+    }
+
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const scrollToPageTarget = (target: NonNullable<NavItem['pageTarget']>) => {
     closeMegaNav()
-    setActivePageTarget(target)
 
     if (target === 'contact') {
-      document
-        .querySelector<HTMLElement>('.contact-section')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      navigateToPath('/contact')
       return
     }
+
+    if (page !== 'home') {
+      navigateToPath('/')
+      window.setTimeout(() => scrollToPageTarget(target), 80)
+      return
+    }
+
+    setActivePageTarget(target)
 
     const heroScroll = document.querySelector<HTMLElement>('.hero-scroll')
     const heroTop = heroScroll?.offsetTop ?? 0
@@ -225,7 +260,8 @@ export function TopNav() {
       stories: 0.22,
       synaId: 0.68,
       sponsors: 0.86,
-    } satisfies Partial<Record<NonNullable<NavItem['pageTarget']>, number>>
+      contact: 0.98,
+    } satisfies Record<NonNullable<NavItem['pageTarget']>, number>
     const progress = progressByTarget[target] ?? 0
 
     window.scrollTo({
@@ -258,20 +294,36 @@ export function TopNav() {
           <div className="mega-nav-tabs" aria-label="导航栏目">
             {tabs.map((tab) => (
               <button
-                aria-selected={activeTab.id === tab.id}
+                aria-selected={activeTab.id === tab.id || (page === 'contact' && tab.pageHref === '/contact')}
                 className="mega-nav-tab"
                 key={tab.id}
                 onFocus={() => {
+                  if (tab.pageHref) {
+                    return
+                  }
+
                   setNavOpen(true)
                   setActiveTabId(tab.id)
                 }}
                 onMouseEnter={() => {
+                  if (tab.pageHref) {
+                    cancelScheduledClose()
+                    return
+                  }
+
                   cancelScheduledClose()
                   setNavOpen(true)
                   setActiveTabId(tab.id)
                 }}
                 onClick={() => {
                   cancelScheduledClose()
+
+                  if (tab.pageHref) {
+                    closeMegaNav()
+                    navigateToPath(tab.pageHref)
+                    return
+                  }
+
                   setNavOpen(true)
                   setActiveTabId(tab.id)
                 }}
@@ -283,21 +335,23 @@ export function TopNav() {
             ))}
           </div>
         </div>
-        <aside className="mega-nav-page-anchors" aria-label="本页锚点">
-          <span className="mega-nav-anchor-spacer" aria-hidden="true" />
-          <div>
-            {pageAnchors.map((item) => (
-              <button
-                className="mega-nav-anchor-link"
-                key={item.label}
-                onClick={() => scrollToPageTarget(item.pageTarget!)}
-                type="button"
-              >
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </div>
-        </aside>
+        {page === 'home' ? (
+          <aside className="mega-nav-page-anchors" aria-label="本页锚点">
+            <span className="mega-nav-anchor-spacer" aria-hidden="true" />
+            <div>
+              {pageAnchors.map((item) => (
+                <button
+                  className="mega-nav-anchor-link"
+                  key={item.label}
+                  onClick={() => scrollToPageTarget(item.pageTarget!)}
+                  type="button"
+                >
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </aside>
+        ) : null}
         <section className="mega-nav-panel" aria-label={activeTab.label}>
           <div className="mega-nav-item-grid">
             {activeTab.items.map((item) => {
@@ -328,24 +382,26 @@ export function TopNav() {
           </div>
         </section>
       </nav>
-      <nav className="scroll-section-nav" aria-label="本页导航">
-        <div className="scroll-section-tabs">
-          {pageAnchors.map((item) => (
-            <button
-              aria-current={activePageTarget === item.pageTarget ? 'page' : undefined}
-              className="scroll-section-tab"
-              key={`compact-${item.label}`}
-              onClick={() => scrollToPageTarget(item.pageTarget!)}
-              type="button"
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-        <a className="scroll-section-cta" href="https://auth.synapsly.org/login">
-          立刻体验
-        </a>
-      </nav>
+      {page === 'home' ? (
+        <nav className="scroll-section-nav" aria-label="本页导航">
+          <div className="scroll-section-tabs">
+            {pageAnchors.map((item) => (
+              <button
+                aria-current={activePageTarget === item.pageTarget ? 'page' : undefined}
+                className="scroll-section-tab"
+                key={`compact-${item.label}`}
+                onClick={() => scrollToPageTarget(item.pageTarget!)}
+                type="button"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <a className="scroll-section-cta" href="https://auth.synapsly.org/login">
+            立刻体验
+          </a>
+        </nav>
+      ) : null}
     </div>
   )
 }

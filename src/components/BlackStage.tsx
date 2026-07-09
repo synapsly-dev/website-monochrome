@@ -3,6 +3,8 @@ import { ProjectLink } from './ProjectLink'
 import { SynapslyGlyph } from './SynapslyGlyph'
 import { siteLinks } from '../data/siteLinks'
 
+const footerProductLinks = Object.values(siteLinks)
+
 export function BlackStage() {
   return (
     <div className="black-stage">
@@ -131,6 +133,51 @@ export function BlackStage() {
             </span>
           ))}
         </div>
+      </section>
+      <section className="contact-section" aria-label="Contact">
+        <div className="contact-brand" data-contact-reveal>
+          <a className="contact-brand-name" href="https://synapsly.ai" rel="noreferrer" target="_blank">
+            Synapsly
+          </a>
+          <p>AI 时代的人才成长网络</p>
+        </div>
+        <nav className="contact-column contact-products" aria-label="产品" data-contact-reveal>
+          <h2>产品</h2>
+          {footerProductLinks.map((link) => (
+            <a href={link.href} key={link.href} rel="noreferrer" target="_blank">
+              {link.label}
+            </a>
+          ))}
+          <a href="https://auth.synapsly.org" rel="noreferrer" target="_blank">
+            Syna ID
+          </a>
+        </nav>
+        <nav className="contact-column contact-company" aria-label="公司" data-contact-reveal>
+          <h2>公司</h2>
+          <span>
+            关于我们 <em>即将上线</em>
+          </span>
+          <span>
+            博客 <em>即将上线</em>
+          </span>
+          <span>
+            新闻 <em>即将上线</em>
+          </span>
+          <span>
+            招聘 <em>即将上线</em>
+          </span>
+        </nav>
+        <address className="contact-column contact-address" data-contact-reveal>
+          <h2>地址</h2>
+          <span>即将补充</span>
+        </address>
+        <footer className="site-footer" data-contact-reveal>
+          <span>© 2026 Synapsly · All rights reserved.</span>
+          <nav aria-label="Legal links">
+            <span>隐私政策 即将上线</span>
+            <span>服务条款 即将上线</span>
+          </nav>
+        </footer>
       </section>
       <p className="scroll-cue scroll-continue-cue">SCROLL TO CONTINUE</p>
     </div>
