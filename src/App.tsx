@@ -1,7 +1,8 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
+import officeHero from './assets/office-hero-option-a.png'
 import { BlackStage } from './components/BlackStage'
 import { HeroHome } from './components/HeroHome'
 import { TopNav } from './components/TopNav'
@@ -9,8 +10,33 @@ import { TopNav } from './components/TopNav'
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
 const CIRCLE_DASH_OVERDRAW = 2
+const CONTACT_PATH = '/contact'
 
-function App() {
+type Page = 'home' | 'contact'
+
+const getCurrentPage = (): Page =>
+  window.location.pathname === CONTACT_PATH ? 'contact' : 'home'
+
+function ContactPage() {
+  return (
+    <main className="site-shell contact-page" id="top">
+      <TopNav page="contact" />
+      <section className="contact-hero" aria-label="Synapsly contact">
+        <img src={officeHero} alt="Synapsly office reception" />
+      </section>
+      <section className="contact-page-content" aria-label="联系方式">
+        <div className="contact-page-copy">
+          <p>联系</p>
+          <a href="mailto:hello@synapsly.org">hello@synapsly.org</a>
+          <a href="mailto:business@synapsly.org">business@synapsly.org</a>
+          <span>其他邮箱 即将补充</span>
+        </div>
+      </section>
+    </main>
+  )
+}
+
+function HomePage() {
   const shellRef = useRef<HTMLElement>(null)
 
   useGSAP(
@@ -441,22 +467,8 @@ function App() {
         contactSection,
       )
 
+      gsap.set(contactSection, { autoAlpha: 0 })
       gsap.set(contactRevealParts, { autoAlpha: 0, y: 34 })
-      gsap
-        .timeline({
-          scrollTrigger: {
-            trigger: contactSection,
-            start: 'top 72%',
-            toggleActions: 'play none none reverse',
-          },
-        })
-        .to(contactRevealParts, {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.86,
-          ease: 'power3.out',
-          stagger: 0.055,
-        })
 
       const timeline = gsap.timeline({
         defaults: { ease: 'none' },
@@ -722,7 +734,16 @@ function App() {
         )
         .addLabel('sponsorsEnd')
         .set(sponsorsStage, { autoAlpha: 0 })
-        .to({}, { duration: 0.16 })
+        .addLabel('contactStart')
+        .set(contactSection, { autoAlpha: 1 })
+        .to(contactRevealParts, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.045,
+          ease: 'power2.out',
+          stagger: 0.006,
+        })
+        .to({}, { duration: 0.01 })
 
       const syncSponsorsLoop = () => {
         const start = timeline.labels.sponsorsStart
@@ -753,48 +774,33 @@ function App() {
 
   return (
     <main ref={shellRef} className="site-shell" id="top">
-      <TopNav />
+      <TopNav page="home" />
       <section className="hero-scroll" aria-label="Synapsly monochrome home">
         <div className="hero-screen">
           <HeroHome />
           <BlackStage />
         </div>
       </section>
-      <section className="contact-section" aria-label="Contact">
-        <header className="contact-intro" data-contact-reveal>
-          <p>Contact</p>
-          <h2>
-            路漫漫其修远兮，吾将上下而
-            <span className="contact-quote-emphasis">求索</span>。
-          </h2>
-        </header>
-        <nav className="contact-link-row" aria-label="Contact links" data-contact-reveal>
-          <a href="mailto:hello@synapsly.org">hello@synapsly.org</a>
-          <a href="mailto:business@synapsly.org">business@synapsly.org</a>
-          <a href="https://github.com/synapsly-dev" rel="noreferrer" target="_blank">
-            GitHub
-          </a>
-          <a href="https://synapsly.ai" rel="noreferrer" target="_blank">
-            Website
-          </a>
-        </nav>
-        <form className="newsletter-form" data-contact-reveal>
-          <label htmlFor="newsletter-email">Join us</label>
-          <div className="newsletter-control">
-            <input id="newsletter-email" type="email" placeholder="Your email" />
-            <button type="button" aria-label="Subscribe">
-              →
-            </button>
-          </div>
-        </form>
-        <footer className="site-footer" data-contact-reveal>
-          <span>©2026 Synapsly</span>
-          <span>Built by Minsecrus</span>
-        </footer>
-      </section>
     </main>
   )
 }
 
-export default App
+function App() {
+  const [page, setPage] = useState<Page>(getCurrentPage)
 
+  useEffect(() => {
+    const handlePageChange = () => setPage(getCurrentPage())
+
+    window.addEventListener('popstate', handlePageChange)
+    window.addEventListener('synapsly:navigation', handlePageChange)
+
+    return () => {
+      window.removeEventListener('popstate', handlePageChange)
+      window.removeEventListener('synapsly:navigation', handlePageChange)
+    }
+  }, [])
+
+  return page === 'contact' ? <ContactPage /> : <HomePage />
+}
+
+export default App

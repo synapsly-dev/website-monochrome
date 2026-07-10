@@ -1,0 +1,120 @@
+.contact-page {
+  min-height: 100svh;
+  background: #ffffff;
+  color: #111111;
+}
+
+.contact-page .site-mega-nav {
+  border-bottom-color: rgb(255 255 255 / 0.08);
+  background: rgb(25 32 29 / 0.98);
+}
+
+.contact-page .mega-nav-brand,
+.contact-page .mega-nav-tab:hover,
+.contact-page .top-nav-shell.is-open .mega-nav-tab[aria-selected='true'],
+.contact-page .site-mega-nav:focus-within .mega-nav-tab[aria-selected='true'],
+.contact-page .mega-nav-anchor-link,
+.contact-page .mega-nav-item {
+  color: #f5f5f5;
+}
+
+.contact-page .mega-nav-brand span:last-child,
+.contact-page .mega-nav-tab,
+.contact-page .mega-nav-item span:last-child,
+.contact-page .mega-nav-placeholder {
+  color: #b7bbb8;
+}
+
+.contact-page .mega-nav-brand:focus-visible,
+.contact-page .mega-nav-tab:focus-visible {
+  outline-color: rgb(255 255 255 / 0.42);
+}
+
+.contact-page .mega-nav-item-grid a:hover {
+  color: #ffffff;
+}
+
+.contact-hero {
+  width: 100%;
+  height: min(64svh, 45rem);
+  min-height: 28rem;
+  padding-top: 4rem;
+  background: #1c221f;
+  overflow: hidden;
+}
+
+.contact-hero img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.contact-page-content {
+  display: grid;
+  min-height: calc(100svh - min(64svh, 45rem));
+  place-items: center;
+  padding: clamp(4rem, 10vw, 8rem) clamp(1.5rem, 6vw, 5rem);
+}
+
+.contact-page-copy {
+  display: grid;
+  width: min(100%, 42rem);
+  gap: clamp(1.2rem, 2.4vw, 1.8rem);
+  color: #999999;
+  font-family: var(--font-sans);
+}
+
+.contact-page-copy p,
+.contact-page-copy a,
+.contact-page-copy span {
+  margin: 0;
+  letter-spacing: 0;
+  line-height: 1.16;
+}
+
+.contact-page-copy p {
+  color: #8f8f8f;
+  font-size: clamp(1.25rem, 2vw, 1.85rem);
+  font-weight: 760;
+}
+
+.contact-page-copy a,
+.contact-page-copy span {
+  width: max-content;
+  max-width: 100%;
+  color: #999999;
+  font-size: clamp(2rem, 4.4vw, 4rem);
+  font-weight: 760;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.contact-page-copy a {
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.contact-page-copy a:hover {
+  color: #111111;
+  transform: translateX(0.18rem);
+}
+
+@media (max-width: 820px) {
+  .contact-hero {
+    height: 46svh;
+    min-height: 19rem;
+  }
+
+  .contact-page-content {
+    place-items: start;
+    padding: 3.6rem 1.25rem 5rem;
+  }
+
+  .contact-page-copy a,
+  .contact-page-copy span {
+    font-size: clamp(1.6rem, 8vw, 2.8rem);
+  }
+}
