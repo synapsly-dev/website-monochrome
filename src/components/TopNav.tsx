@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { ArrowRight } from 'lucide-react'
 import { siteLinks } from '../data/siteLinks'
 
 type NavItem = {
@@ -114,12 +115,11 @@ const navigateToPath = (path: string) => {
 }
 
 export function TopNav({ page = 'home' }: TopNavProps) {
-  const [activeTabId, setActiveTabId] = useState<NavTab['id']>('sites')
   const [activePageTarget, setActivePageTarget] = useState<NonNullable<NavItem['pageTarget']>>('stories')
   const [navOpen, setNavOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const closeTimerRef = useRef<number | null>(null)
-  const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0]
+  const activeTab = tabs[0]
 
   useEffect(() => {
     if (page !== 'home') {
@@ -283,6 +283,7 @@ export function TopNav({ page = 'home' }: TopNavProps) {
             className="mega-nav-brand"
             href="#top"
             onFocus={() => setNavOpen(true)}
+            onMouseEnter={() => setNavOpen(true)}
             onClick={(event) => {
               event.preventDefault()
               scrollToTop()
@@ -291,49 +292,37 @@ export function TopNav({ page = 'home' }: TopNavProps) {
             <span>Syn</span>
             <span>apsly.</span>
           </a>
-          <div className="mega-nav-tabs" aria-label="导航栏目">
-            {tabs.map((tab) => (
-              <button
-                aria-selected={activeTab.id === tab.id || (page === 'contact' && tab.pageHref === '/contact')}
-                className="mega-nav-tab"
-                key={tab.id}
-                onFocus={() => {
-                  if (tab.pageHref) {
-                    return
-                  }
+          <div className="mega-nav-tabs" aria-label="本页导航">
+            {pageAnchors.map((item) => {
+              const isActive = page === 'contact' ? item.pageTarget === 'contact' : activePageTarget === item.pageTarget
 
-                  setNavOpen(true)
-                  setActiveTabId(tab.id)
-                }}
-                onMouseEnter={() => {
-                  if (tab.pageHref) {
+              return (
+                <button
+                  aria-current={isActive ? 'page' : undefined}
+                  className="mega-nav-tab"
+                  key={`top-${item.label}`}
+                  onFocus={() => {
+                    setNavOpen(true)
+                  }}
+                  onMouseEnter={() => {
                     cancelScheduledClose()
-                    return
-                  }
-
-                  cancelScheduledClose()
-                  setNavOpen(true)
-                  setActiveTabId(tab.id)
-                }}
-                onClick={() => {
-                  cancelScheduledClose()
-
-                  if (tab.pageHref) {
-                    closeMegaNav()
-                    navigateToPath(tab.pageHref)
-                    return
-                  }
-
-                  setNavOpen(true)
-                  setActiveTabId(tab.id)
-                }}
-                role="tab"
-                type="button"
-              >
-                <span>{tab.label}</span>
-              </button>
-            ))}
+                    setNavOpen(true)
+                  }}
+                  onClick={() => {
+                    cancelScheduledClose()
+                    scrollToPageTarget(item.pageTarget!)
+                  }}
+                  type="button"
+                >
+                  <span>{item.label}</span>
+                </button>
+              )
+            })}
           </div>
+          <a className="mega-nav-cta" href="https://auth.synapsly.org/login" rel="noreferrer" target="_blank">
+            <span>立即体验</span>
+            <ArrowRight aria-hidden="true" size={18} strokeWidth={1.8} />
+          </a>
         </div>
         {page === 'home' ? (
           <aside className="mega-nav-page-anchors" aria-label="本页锚点">
