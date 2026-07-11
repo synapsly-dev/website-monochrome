@@ -118,13 +118,14 @@ export function TopNav({ page = 'home' }: TopNavProps) {
   const [activePageTarget, setActivePageTarget] = useState<NonNullable<NavItem['pageTarget']>>('stories')
   const [navOpen, setNavOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const shellRef = useRef<HTMLDivElement>(null)
   const closeTimerRef = useRef<number | null>(null)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0]
 
   useEffect(() => {
     if (page !== 'home') {
       setScrolled(false)
-      setNavOpen(false)
+      closeMegaNav()
       return
     }
 
@@ -136,7 +137,7 @@ export function TopNav({ page = 'home' }: TopNavProps) {
       setScrolled(scrollY > 64)
 
       if (scrollY > 64) {
-        setNavOpen(false)
+        closeMegaNav()
       }
 
       const heroScroll = document.querySelector<HTMLElement>('.hero-scroll')
@@ -199,7 +200,7 @@ export function TopNav({ page = 'home' }: TopNavProps) {
   const closeMegaNav = () => {
     cancelScheduledClose()
     setNavOpen(false)
-    if (document.activeElement instanceof HTMLElement) {
+    if (document.activeElement instanceof HTMLElement && shellRef.current?.contains(document.activeElement)) {
       document.activeElement.blur()
     }
   }
@@ -273,8 +274,9 @@ export function TopNav({ page = 'home' }: TopNavProps) {
   return (
     <div
       className={`top-nav-shell${navOpen ? ' is-open' : ''}${scrolled ? ' is-scrolled' : ''}`}
+      ref={shellRef}
       onPointerMove={closeMegaNavAwayFromTabs}
-      onPointerLeave={() => setNavOpen(false)}
+      onPointerLeave={closeMegaNav}
     >
       <div className="top-nav-trigger" aria-hidden="true" />
       <nav className="site-mega-nav" aria-label="Synapsly navigation">
