@@ -120,7 +120,8 @@
 }
 
 .mega-nav-tab:hover,
-.mega-nav-tab[aria-selected='true'] {
+.top-nav-shell.is-open .mega-nav-tab[aria-selected='true'],
+.site-mega-nav:focus-within .mega-nav-tab[aria-selected='true'] {
   color: #000000;
 }
 
